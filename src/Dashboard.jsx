@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import TaskManager from './TaskManager';
 
 const defaultExercises = [
-  { name: 'Pushups', frequency: 'Every day', count: 6 },
-  { name: 'Running', frequency: 'Every day', count: 6 },
-  { name: 'Situps', frequency: 'Every day', count: 6 },
-  { name: 'Squats', frequency: 'Every day', count: 6 },
+  { name: 'Pushups', frequency: 'Every day' },
+  { name: 'Running', frequency: 'Every day' },
+  { name: 'Situps', frequency: 'Every day' },
+  { name: 'Squats', frequency: 'Every day' },
 ];
 
 const allExercises = [
@@ -17,11 +18,17 @@ const allExercises = [
   'Jumping Jacks'
 ];
 
-export default function Exercises({ user, updateUser }) {
+export default function Dashboard({ user, updateUser, onLogout }) {
   const [exercises, setExercises] = useState(() => {
     const saved = localStorage.getItem('exercises');
-    return saved ? JSON.parse(saved) : defaultExercises;
+    return saved ? JSON.parse(saved) : defaultExercises.map(ex => ({ ...ex, count: user.startCount, completed: false }));
   });
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('exercises', JSON.stringify(exercises));
@@ -78,64 +85,92 @@ export default function Exercises({ user, updateUser }) {
 
   function addExercise(name) {
     if (exercises.find(ex => ex.name === name)) return;
-    setExercises([...exercises, { name, frequency: 'Every day', count: 0, completed: false }]);
+    setExercises([...exercises, { name, frequency: 'Every day', count: user.startCount, completed: false }]);
   }
 
   const dropdownOptions = allExercises.filter(name => !exercises.some(ex => ex.name === name));
 
+  const rank = getProfileRank(user.points);
+
   return (
-    <div className="mt-6 px-6">
-      <div className="text-center mb-6">
-        <img
-          src={`/profile-${getProfileRank(user.points)}.png`}
-          alt="Profile"
-          className="w-20 h-20 rounded-full border-4 border-gray-300 mx-auto"
-        />
-        <div className="text-xl font-bold mt-2">{user.name}</div>
-        <div className="text-sm text-gray-600 mt-1">
-          Completed {user.tasksCompleted} tasks, Rank: {getProfileRank(user.points)}
-        </div>
-        <div className="bg-gray-200 inline-block px-4 py-2 rounded shadow text-sm font-medium text-gray-800 mt-2">
+    <div className="px-6 py-4">
+      <div className="flex justify-between items-center mb-4">
+        <button className="text-blue-600 font-semibold hover:underline" onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
+          Tasks
+        </button>
+        <h1 className="text-2xl font-bold">Flow-State</h1>
+        <button
+          onClick={onLogout}
+          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+        >
+          Logout
+        </button>
+      </div>
+
+      <div className="flex justify-center items-center mt-6 relative space-x-4">
+        <div className="bg-gray-200 px-4 py-2 rounded shadow text-sm font-medium text-gray-800 w-28 text-center">
           Points: {user.points}
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        {exercises.map((ex, i) => (
-          <div
-            key={i}
-            className={`p-4 rounded-lg shadow border text-center cursor-pointer transition select-none ${ex.completed ? 'bg-green-100 line-through' : 'bg-white hover:bg-gray-50'}`}
-            onClick={() => toggleExercise(i)}
-          >
-            <div className="text-lg font-semibold">{ex.name}</div>
-            <div className="text-sm text-gray-600">Still {ex.count} to go</div>
-            <button
-              onClick={(e) => { e.stopPropagation(); removeExercise(ex.name); }}
-              className="text-xs text-red-500 mt-2 hover:underline"
-            >Remove</button>
+        <div className="flex flex-col items-center">
+          <img
+            src={`/profile-${rank}.png`}
+            alt="Profile"
+            className="w-20 h-20 rounded-full border-4 border-gray-300"
+          />
+          <div className="text-xl font-bold mt-2">{user.name}</div>
+          <div className="text-sm text-gray-600 mt-1">
+            Completed {user.tasksCompleted} tasks, Rank: {rank}
           </div>
-        ))}
+        </div>
+
+        <div className="bg-gray-200 px-4 py-2 rounded shadow text-sm font-medium text-gray-800 w-28 text-center">
+          Time: {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </div>
       </div>
 
-      {dropdownOptions.length > 0 && (
-        <div className="mb-4">
-          <label className="block mb-1 font-medium text-gray-700">Add Exercise:</label>
-          <select
-            onChange={(e) => {
-              if (e.target.value) {
-                addExercise(e.target.value);
-                e.target.value = '';
-              }
-            }}
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">Select an exercise</option>
-            {dropdownOptions.map((name, idx) => (
-              <option key={idx} value={name}>{name}</option>
-            ))}
-          </select>
+      <div className="mt-6 px-6">
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {exercises.map((ex, i) => (
+            <div
+              key={i}
+              className={`p-4 rounded-lg shadow border text-center cursor-pointer transition select-none ${ex.completed ? 'bg-green-100 line-through' : 'bg-white hover:bg-gray-50'}`}
+              onClick={() => toggleExercise(i)}
+            >
+              <div className="text-lg font-semibold">{ex.name}</div>
+              <div className="text-sm text-gray-600">Still {ex.count} {ex.name.toLowerCase().includes('run') ? 'km' : ''} to go</div>
+              <button
+                onClick={(e) => { e.stopPropagation(); removeExercise(ex.name); }}
+                className="text-xs text-red-500 mt-2 hover:underline"
+              >Remove</button>
+            </div>
+          ))}
         </div>
-      )}
+
+        {dropdownOptions.length > 0 && (
+          <div className="mb-4">
+            <label className="block mb-1 font-medium text-gray-700">Add Exercise:</label>
+            <select
+              onChange={(e) => {
+                if (e.target.value) {
+                  addExercise(e.target.value);
+                  e.target.value = '';
+                }
+              }}
+              className="w-full border rounded px-3 py-2"
+            >
+              <option value="">Select an exercise</option>
+              {dropdownOptions.map((name, idx) => (
+                <option key={idx} value={name}>{name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-10">
+        <TaskManager />
+      </div>
     </div>
   );
 }
