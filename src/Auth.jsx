@@ -82,7 +82,7 @@ export default function Auth({ onLogin }) {
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
           >
-            {isSignup ? 'Create Account' : 'Login please'}
+            {isSignup ? 'Create Account' : 'Login'}
           </button>
         </form>
         <div className="text-center mt-4">
