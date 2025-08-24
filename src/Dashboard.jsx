@@ -93,12 +93,11 @@ export default function Dashboard({ user, updateUser, onLogout }) {
   const rank = getProfileRank(user.points);
 
   return (
-    <div className="px-6 py-4">
-      <div className="flex justify-between items-center mb-4">
-        <button className="text-blue-600 font-semibold hover:underline" onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
-          Tasks
-        </button>
-        <h1 className="text-2xl font-bold">Flow-State</h1>
+    <div className="h-screen overflow-y-auto">
+      <div className=" sticky top- bg-blue-200 p-3  z-2 flex justify-between items-center mb-4 fixed w-100%">
+        
+        
+        <h1 className="text-3xl font-bold ">Flow-State</h1>
         <button
           onClick={onLogout}
           className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
@@ -116,7 +115,7 @@ export default function Dashboard({ user, updateUser, onLogout }) {
           <img
             src={`/profile-${rank}.png`}
             alt="Profile"
-            className="w-20 h-20 rounded-full border-4 border-gray-300"
+            className="w-30 h-30 rounded-full border-4 border-gray-300"
           />
           <div className="text-xl font-bold mt-2">{user.name}</div>
           <div className="text-sm text-gray-600 mt-1">
@@ -130,7 +129,7 @@ export default function Dashboard({ user, updateUser, onLogout }) {
       </div>
 
       <div className="mt-6 px-6">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+<div className="grid gap-4 mb-4 sm:grid-cols-1 md:grid-cols-2 ">
           {exercises.map((ex, i) => (
             <div
               key={i}
@@ -157,7 +156,7 @@ export default function Dashboard({ user, updateUser, onLogout }) {
                   e.target.value = '';
                 }
               }}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 p-l-4 py-3"
             >
               <option value="">Select an exercise</option>
               {dropdownOptions.map((name, idx) => (
@@ -168,7 +167,7 @@ export default function Dashboard({ user, updateUser, onLogout }) {
         )}
       </div>
 
-      <div className="mt-10">
+      <div className="mt-10 ">
         <TaskManager />
       </div>
     </div>
