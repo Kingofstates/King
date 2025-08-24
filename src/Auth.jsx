@@ -33,7 +33,7 @@ export default function Auth({ onLogin }) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 ">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md w-300px">
+      <div className="bg-white p-6 rounded-lg shadow-md  sm-w-400px md-w-768px lg-w-100px  max-w-md w-300px">
         <h2 className="text-2xl font-semibold mb-4 text-center text-red-400">
           {isSignup ? 'Sign Up' : 'Login'}
         </h2>
@@ -56,8 +56,8 @@ export default function Auth({ onLogin }) {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full border rounded px-3 py-2"
-          />
+            className="w-full border rounded p-4px "
+          /> 
           <input
             type="password"
             name="password"
