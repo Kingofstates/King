@@ -43,7 +43,7 @@ export default function TaskManager() {
     <>
       <button
         onClick={() => setShowTasks(!showTasks)}
-        className="fixed bottom-3 right-4 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+        className="fixed bottom-3 right-3 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
       >
         Tasks
       </button>
