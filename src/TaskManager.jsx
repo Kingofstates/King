@@ -43,14 +43,14 @@ export default function TaskManager() {
     <>
       <button
         onClick={() => setShowTasks(!showTasks)}
-        className="fixed bottom-8 right-8 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+        className="fixed bottom-3 right-4 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
       >
         Tasks
       </button>
 
       {showTasks && (
         <div
-          className="fixed bottom-20 right-8 w-80 max-h-96 bg-white shadow-lg rounded-lg p-4 overflow-auto border border-gray-300"
+          className="fixed bottom-10 right-5 w-80 max-h-96 bg-white shadow-lg rounded-lg p-4 overflow-auto border border-gray-300"
           onClick={hideDescription}
         >
           <div className="flex justify-between items-center mb-3">
