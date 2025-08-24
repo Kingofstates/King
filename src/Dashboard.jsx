@@ -94,7 +94,7 @@ export default function Dashboard({ user, updateUser, onLogout }) {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <div className=" sticky top- bg-blue-200 p-3  z-2 flex justify-between items-center mb-4 fixed w-100%">
+      <div className="bg-blue-200 p-3  z-2 flex justify-between items-center mb-4 w-100%">
         
         
         <h1 className="text-3xl font-bold ">Flow-State</h1>
