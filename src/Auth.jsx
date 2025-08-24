@@ -56,7 +56,7 @@ export default function Auth({ onLogin }) {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full border rounded p-4px "
+            className="w-full border rounded px-3 py-2"
           /> 
           <input
             type="password"
