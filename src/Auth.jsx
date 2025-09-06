@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 
+const ADMIN_EMAIL = "admin@flowstate.com";
+const ADMIN_PASS = "king@1120";
+
 export default function Auth({ onLogin }) {
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({
@@ -15,6 +18,16 @@ export default function Auth({ onLogin }) {
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    // ✅ Admin bypass before checking localStorage
+    if (formData.email === ADMIN_EMAIL && formData.password === ADMIN_PASS) {
+      onLogin({
+        name: "King of states",
+        email: formData.email,
+        isAdmin: true,
+      });
+      return;
+    }
 
     // get users from localStorage (our fake DB for now)
     let users = JSON.parse(localStorage.getItem('users')) || [];
