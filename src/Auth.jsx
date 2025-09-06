@@ -15,28 +15,60 @@ export default function Auth({ onLogin }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (isSignup && formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
+
+    // get users from localStorage (our fake DB for now)
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+
+    if (isSignup) {
+      // --- SIGN UP ---
+      if (formData.password !== formData.confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      if (users.find(u => u.email === formData.email)) {
+        alert("Email already registered. Please login.");
+        return;
+      }
+
+      const newUser = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        points: 0,
+        tasksCompleted: 0,
+        startCount: 0,
+      };
+
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+      onLogin(newUser);
+
+    } else {
+      // --- LOGIN ---
+      const user = users.find(u => u.email === formData.email);
+      if (!user) {
+        alert("No account found. Please register.");
+        setIsSignup(true);
+        return;
+      }
+
+      if (user.password !== formData.password) {
+        alert("Incorrect password");
+        return;
+      }
+
+      onLogin(user);
     }
-
-    const userData = {
-      name: isSignup ? formData.name : 'Player',
-      email: formData.email,
-      password: formData.password,
-      points: 0,
-      tasksCompleted: 0
-    };
-
-    onLogin(userData);
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 ">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md w-300px">
-        <h2 className="text-3xl font-semibold mb-4 text-center text-red-400">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-semibold mb-4 text-center">
           {isSignup ? 'Sign Up' : 'Login'}
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {isSignup && (
             <input
@@ -49,6 +81,7 @@ export default function Auth({ onLogin }) {
               className="w-full border rounded px-3 py-2"
             />
           )}
+
           <input
             type="email"
             name="email"
@@ -57,7 +90,8 @@ export default function Auth({ onLogin }) {
             onChange={handleChange}
             required
             className="w-full border rounded px-3 py-2"
-          /> 
+          />
+
           <input
             type="password"
             name="password"
@@ -67,6 +101,7 @@ export default function Auth({ onLogin }) {
             required
             className="w-full border rounded px-3 py-2"
           />
+
           {isSignup && (
             <input
               type="password"
@@ -78,13 +113,15 @@ export default function Auth({ onLogin }) {
               className="w-full border rounded px-3 py-2"
             />
           )}
+
           <button
             type="submit"
-            className="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
           >
             {isSignup ? 'Create Account' : 'Login'}
           </button>
         </form>
+
         <div className="text-center mt-4">
           {isSignup ? 'Already have an account?' : 'New to the game?'}{' '}
           <button

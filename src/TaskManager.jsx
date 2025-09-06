@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-export default function TaskManager() {
+export default function TaskManager({ user, updateUser, pointsPerTask }) {
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem('tasks');
     return saved ? JSON.parse(saved) : [];
   });
+
   const [showTasks, setShowTasks] = useState(false);
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, description: '' });
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,6 +17,19 @@ export default function TaskManager() {
   function toggleTask(id) {
     if (window.confirm('Do you really complete this task?')) {
       setTasks(tasks.filter(task => task.id !== id));
+
+      // ✅ award points using config
+      const updatedUser = {
+        ...user,
+        tasksCompleted: user.tasksCompleted + 1,
+        points: user.points + pointsPerTask,
+      };
+      updateUser(updatedUser);
+
+      // persist user
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      users = users.map(u => (u.email === updatedUser.email ? updatedUser : u));
+      localStorage.setItem('users', JSON.stringify(users));
     }
   }
 
@@ -40,17 +54,17 @@ export default function TaskManager() {
   );
 
   return (
-    <>
+    <div className="relative inline-block">
       <button
         onClick={() => setShowTasks(!showTasks)}
-        className="fixed bottom-3 right-3 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+        className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition"
       >
         Tasks
       </button>
 
       {showTasks && (
         <div
-          className="fixed bottom-10 right-5 w-80 max-h-96 bg-white shadow-lg rounded-lg p-4 overflow-auto border border-gray-300"
+          className="absolute left-0 mt-2 w-80 max-h-96 bg-white shadow-lg rounded-lg p-4 overflow-auto border border-gray-300 z-50"
           onClick={hideDescription}
         >
           <div className="flex justify-between items-center mb-3">
@@ -84,6 +98,7 @@ export default function TaskManager() {
               </li>
             ))}
           </ul>
+
           <button
             onClick={addTask}
             className="mt-4 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
@@ -102,6 +117,6 @@ export default function TaskManager() {
           <button onClick={hideDescription} className="mt-2 text-blue-600 text-sm">Close</button>
         </div>
       )}
-    </>
+    </div>
   );
 }

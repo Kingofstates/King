@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import TaskManager from './TaskManager';
+import ExerciseCard from './ExerciseCard';
+import MusicPlayer from './MusicPlayer';
+
+// ✅ Configurable rewards
+const POINTS_CONFIG = {
+  exerciseComplete: 10,
+  taskComplete: 5,
+};
 
 const defaultExercises = [
   { name: 'Pushups', frequency: 'Every day' },
@@ -21,27 +29,37 @@ const allExercises = [
 export default function Dashboard({ user, updateUser, onLogout }) {
   const [exercises, setExercises] = useState(() => {
     const saved = localStorage.getItem('exercises');
-    return saved ? JSON.parse(saved) : defaultExercises.map(ex => ({ ...ex, count: user.startCount, completed: false }));
+    return saved
+      ? JSON.parse(saved)
+      : defaultExercises.map(ex => ({ ...ex, count: user.startCount, completed: false }));
   });
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // auto update clock
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
+  // save exercises to localStorage
   useEffect(() => {
     localStorage.setItem('exercises', JSON.stringify(exercises));
   }, [exercises]);
 
-  const completedToday = exercises.every(ex => ex.completed);
-
+  // reset exercises daily and increase count
   useEffect(() => {
     const now = new Date().toDateString();
     const lastReset = localStorage.getItem('lastReset');
+
     if (lastReset !== now) {
-      const resetExercises = exercises.map(ex => ({ ...ex, completed: false }));
-      setExercises(resetExercises);
+      const increasedExercises = exercises.map(ex => ({
+        ...ex,
+        completed: false,
+        count: ex.count + 1
+      }));
+
+      setExercises(increasedExercises);
+      localStorage.setItem('exercises', JSON.stringify(increasedExercises));
       localStorage.setItem('lastReset', now);
     }
   }, []);
@@ -52,7 +70,6 @@ export default function Dashboard({ user, updateUser, onLogout }) {
 
     const newExercises = [...exercises];
     newExercises[index].completed = true;
-    newExercises[index].count += 1;
     setExercises(newExercises);
 
     const completed = newExercises.every(ex => ex.completed);
@@ -60,14 +77,17 @@ export default function Dashboard({ user, updateUser, onLogout }) {
       setTimeout(() => alert('Congratulations! You completed all exercises today!'), 500);
     }
 
-    const newPoints = user.points + 10;
+    // ✅ use config for points
+    const newPoints = user.points + POINTS_CONFIG.exerciseComplete;
     const oldRank = getProfileRank(user.points);
     const newRank = getProfileRank(newPoints);
     if (newRank !== oldRank) {
       setTimeout(() => alert(`Rank up! You are now rank ${newRank}`), 500);
     }
 
-    updateUser({ ...user, points: newPoints });
+    const updatedUser = { ...user, points: newPoints };
+    updateUser(updatedUser);
+    persistUser(updatedUser);
   }
 
   function getProfileRank(points) {
@@ -89,23 +109,32 @@ export default function Dashboard({ user, updateUser, onLogout }) {
   }
 
   const dropdownOptions = allExercises.filter(name => !exercises.some(ex => ex.name === name));
-
   const rank = getProfileRank(user.points);
+
+  function persistUser(updatedUser) {
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    users = users.map(u => (u.email === updatedUser.email ? updatedUser : u));
+    localStorage.setItem('users', JSON.stringify(users));
+  }
 
   return (
     <div className="h-screen overflow-y-auto">
-      <div className="bg-blue-200 p-3  z-2 flex justify-between items-center mb-4 w-100%">
-        
-        
-        <h1 className="text-3xl font-bold ">Flow-State</h1>
-        <button
-          onClick={onLogout}
-          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
-        >
-          Logout
-        </button>
+      {/* Header */}
+      <div className="bg-blue-200 p-3 flex justify-between items-center mb-4 w-full">
+        <TaskManager user={user} updateUser={updateUser} pointsPerTask={POINTS_CONFIG.taskComplete} />
+        <h1 className="text-3xl font-bold">Flow-State</h1>
+        <div className="flex items-center space-x-2">
+          <MusicPlayer />
+          <button
+            onClick={onLogout}
+            className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
+      {/* Profile + Info */}
       <div className="flex justify-center items-center mt-6 relative space-x-4">
         <div className="bg-gray-200 px-4 py-2 rounded shadow text-sm font-medium text-gray-800 w-28 text-center">
           Points: {user.points}
@@ -128,21 +157,17 @@ export default function Dashboard({ user, updateUser, onLogout }) {
         </div>
       </div>
 
+      {/* Exercises */}
       <div className="mt-6 px-6">
-<div className="grid gap-4 mb-4 sm:grid-cols-1 md:grid-cols-2 ">
+        <div className="grid gap-4 mb-4 sm:grid-cols-1 md:grid-cols-2">
           {exercises.map((ex, i) => (
-            <div
+            <ExerciseCard
               key={i}
-              className={`p-4 rounded-lg shadow border text-center cursor-pointer transition select-none ${ex.completed ? 'bg-green-100 line-through' : 'bg-white hover:bg-gray-50'}`}
-              onClick={() => toggleExercise(i)}
-            >
-              <div className="text-lg font-semibold">{ex.name}</div>
-              <div className="text-sm text-gray-600">Still {ex.count} {ex.name.toLowerCase().includes('run') ? 'km' : ''} to go</div>
-              <button
-                onClick={(e) => { e.stopPropagation(); removeExercise(ex.name); }}
-                className="text-xs text-red-500 mt-2 hover:underline"
-              >Remove</button>
-            </div>
+              ex={ex}
+              index={i}
+              toggleExercise={toggleExercise}
+              removeExercise={removeExercise}
+            />
           ))}
         </div>
 
@@ -156,7 +181,7 @@ export default function Dashboard({ user, updateUser, onLogout }) {
                   e.target.value = '';
                 }
               }}
-              className="w-full border rounded px-3 p-l-4 py-3"
+              className="w-full border rounded px-3 py-3"
             >
               <option value="">Select an exercise</option>
               {dropdownOptions.map((name, idx) => (
@@ -165,10 +190,6 @@ export default function Dashboard({ user, updateUser, onLogout }) {
             </select>
           </div>
         )}
-      </div>
-
-      <div className="mt-10 ">
-        <TaskManager />
       </div>
     </div>
   );
