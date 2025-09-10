@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 export default function TaskManager({ user, updateUser, pointsPerTask }) {
+  // 🔑 unique key for this user's tasks
+  const userKey = `tasks_${user.email}`;
+
   const [tasks, setTasks] = useState(() => {
-    const saved = localStorage.getItem('tasks');
+    const saved = localStorage.getItem(userKey);
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -10,19 +13,20 @@ export default function TaskManager({ user, updateUser, pointsPerTask }) {
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, description: '' });
   const [searchQuery, setSearchQuery] = useState('');
 
+  // persist tasks per user
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }, [tasks]);
+    localStorage.setItem(userKey, JSON.stringify(tasks));
+  }, [tasks, userKey]);
 
   function toggleTask(id) {
     if (window.confirm('Do you really complete this task?')) {
       setTasks(tasks.filter(task => task.id !== id));
 
-      // ✅ award points using config
+      // ✅ award points to this user
       const updatedUser = {
         ...user,
-        tasksCompleted: user.tasksCompleted + 1,
-        points: user.points + pointsPerTask,
+        tasksCompleted: (user.tasksCompleted || 0) + 1,
+        points: (user.points || 0) + pointsPerTask,
       };
       updateUser(updatedUser);
 
@@ -57,19 +61,19 @@ export default function TaskManager({ user, updateUser, pointsPerTask }) {
     <div className="relative inline-block">
       <button
         onClick={() => setShowTasks(!showTasks)}
-        className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition"
+        className="btn-glow"
       >
         Tasks
       </button>
 
       {showTasks && (
         <div
-          className="absolute left-0 mt-2 w-80 max-h-96 bg-white shadow-lg rounded-lg p-4 overflow-auto border border-gray-300 z-50"
+          className="absolute left-0 mt-2 w-80 max-h-96 glass-card p-4 overflow-auto z-50"
           onClick={hideDescription}
         >
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-lg font-semibold">Your Tasks</h3>
-            <button onClick={() => setShowTasks(false)} className="text-gray-500 hover:text-gray-800">✖</button>
+            <button onClick={() => setShowTasks(false)} className="text-gray-400 hover:text-white">✖</button>
           </div>
 
           <input
@@ -77,22 +81,22 @@ export default function TaskManager({ user, updateUser, pointsPerTask }) {
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full mb-3 px-2 py-1 border rounded focus:outline-none focus:ring"
+            className="w-full mb-3 px-2 py-1 rounded bg-black/40 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring focus:ring-cyan-500"
           />
 
           <ul>
-            {filteredTasks.length === 0 && <li>No tasks found.</li>}
+            {filteredTasks.length === 0 && <li className="text-gray-400">No tasks found.</li>}
             {filteredTasks.map(task => (
               <li
                 key={task.id}
-                className="flex items-center justify-start mb-2 space-x-2 p-2 border rounded hover:bg-gray-100 relative"
+                className="flex items-center justify-start mb-2 space-x-2 p-2 rounded bg-black/30 border border-white/10 hover:bg-black/50 cursor-pointer"
                 onContextMenu={(e) => showDescription(e, task.description)}
                 title={task.description || ''}
               >
                 <input
                   type="checkbox"
                   onChange={() => toggleTask(task.id)}
-                  className="mr-2 accent-green-600"
+                  className="mr-2 accent-cyan-400"
                 />
                 <span>{task.text}</span>
               </li>
@@ -101,7 +105,7 @@ export default function TaskManager({ user, updateUser, pointsPerTask }) {
 
           <button
             onClick={addTask}
-            className="mt-4 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+            className="mt-4 btn-glow"
           >
             Add Task
           </button>
@@ -110,11 +114,11 @@ export default function TaskManager({ user, updateUser, pointsPerTask }) {
 
       {contextMenu.visible && (
         <div
-          className="fixed bg-white border p-2 shadow-md rounded z-50"
+          className="fixed glass-card p-2 shadow-md rounded z-50 max-w-xs"
           style={{ top: contextMenu.y, left: contextMenu.x }}
         >
-          <p className="text-sm text-gray-800">{contextMenu.description || 'No description'}</p>
-          <button onClick={hideDescription} className="mt-2 text-blue-600 text-sm">Close</button>
+          <p className="text-sm">{contextMenu.description || 'No description'}</p>
+          <button onClick={hideDescription} className="mt-2 text-cyan-400 text-sm hover:underline">Close</button>
         </div>
       )}
     </div>

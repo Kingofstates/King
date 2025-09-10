@@ -76,10 +76,10 @@ export default function Auth({ onLogin }) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-4 text-center">
-          {isSignup ? 'Sign Up' : 'Login'}
+    <div className="flex flex-col items-center justify-center min-h-screen px-4">
+      <div className="glass-card p-8 w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center">
+          {isSignup ? 'Create Account' : 'Login'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -91,7 +91,7 @@ export default function Auth({ onLogin }) {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full border rounded px-3 py-2"
+              className="w-full px-3 py-2 rounded bg-black/40 border border-cyan-500 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
             />
           )}
 
@@ -102,7 +102,7 @@ export default function Auth({ onLogin }) {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full border rounded px-3 py-2"
+            className="w-full px-3 py-2 rounded bg-black/40 border border-cyan-500 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
 
           <input
@@ -112,7 +112,7 @@ export default function Auth({ onLogin }) {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full border rounded px-3 py-2"
+            className="w-full px-3 py-2 rounded bg-black/40 border border-cyan-500 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
 
           {isSignup && (
@@ -123,23 +123,23 @@ export default function Auth({ onLogin }) {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full border rounded px-3 py-2"
+              className="w-full px-3 py-2 rounded bg-black/40 border border-cyan-500 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
             />
           )}
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            className="w-full btn-glow"
           >
-            {isSignup ? 'Create Account' : 'Login'}
+            {isSignup ? 'Sign Up' : 'Login'}
           </button>
         </form>
 
-        <div className="text-center mt-4">
-          {isSignup ? 'Already have an account?' : 'New to the game?'}{' '}
+        <div className="text-center mt-6">
+          {isSignup ? 'Already have an account?' : 'New here?'}{' '}
           <button
             onClick={() => setIsSignup(!isSignup)}
-            className="text-blue-600 hover:underline"
+            className="text-cyan-400 hover:underline"
           >
             {isSignup ? 'Login' : 'Sign Up'}
           </button>

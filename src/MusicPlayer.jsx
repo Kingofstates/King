@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import React, { useEffect, useRef, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 
 export default function MusicPlayer() {
   const audioRef = useRef(null);
@@ -7,11 +7,7 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     if (audioRef.current) {
-      // try to auto-play on load
-      audioRef.current.play().catch(() => {
-        // if browser blocks autoplay, mark as not playing
-        setPlaying(false);
-      });
+      audioRef.current.play().catch(() => setPlaying(false));
     }
   }, []);
 
@@ -26,14 +22,26 @@ export default function MusicPlayer() {
   }
 
   return (
-    <div className="ml-4">
+    <div className="mt-4 flex justify-center">
       <button
         onClick={togglePlay}
-        className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow"
-        title={playing ? 'Pause Music' : 'Play Music'}
+        title={playing ? "Pause Music" : "Play Music"}
+        className={`w-12 h-12 rounded-full flex items-center justify-center 
+          bg-gray-900 border border-cyan-400 
+          transition transform hover:scale-110
+          ${
+            playing
+              ? "shadow-[0_0_20px_5px_rgba(0,200,255,0.9)] animate-[pulse_1s_ease-in-out_infinite]"
+              : "shadow-[0_0_12px_3px_rgba(0,200,255,0.4)]"
+          }`}
       >
-        {playing ? <Volume2 size={20} /> : <VolumeX size={20} />}
+        {playing ? (
+          <Volume2 size={22} className="text-cyan-300" />
+        ) : (
+          <VolumeX size={22} className="text-gray-500" />
+        )}
       </button>
+
       {/* hidden audio element */}
       <audio ref={audioRef} src="/background.mp3" loop autoPlay />
     </div>
