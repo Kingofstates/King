@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- theme -->
+    <meta name="theme-color" content="#0f172a" />
+    <!-- Title -->
+    <title>Solo Leveling 👑</title>
+
+    <!-- Favicon (place statue.png in the project root `public/` folder) -->
+    <!-- In Vite: public/statue.png -> available at /statue.png -->
+    <link rel="icon" type="image/png" href="/King/statue.png" />
+
+    <!-- Google font (preconnect for speed) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Basic social/meta (optional but handy) -->
+    <meta name="description" content="Daily tasks, points and exercises — Solo Leveling web app." />
+    <meta property="og:title" content="Solo Leveling 👑" />
+    <meta property="og:description" content="Complete tasks, earn points, level up!" />
+    <meta property="og:image" content="/King/statue.png" />
+
+    <!-- Inline critical styles for quick pleasant first paint (keeps UI from looking broken) -->
+    <style>
+      /* Basic neutral reset + app-loading skeleton so users don't see raw markup */
+      :root { --bg:#f8fafc; --muted:#94a3b8; --brand:#0ea5a0; font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+      html,body,#root { height:100%; margin:0; }
+      body { background:var(--bg); color:#0f172a; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+      /* center loader */
+      .app-loading { display:flex; align-items:center; justify-content:center; height:100vh; gap:1rem; }
+      .loader-card { width:380px; max-width:90%; padding:20px; border-radius:12px; background:white; box-shadow:0 6px 18px rgba(2,6,23,0.08); text-align:center; }
+      .skeleton { height:12px; background:linear-gradient(90deg, #e6eef4 25%, #f4f8fb 50%, #e6eef4 75%); background-size:200% 100%; animation: shimmer 1.2s linear infinite; border-radius:8px; margin:8px 0; }
+      .skeleton.h-24 { height:96px; border-radius:8px; }
+      @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+      .brand { font-weight:700; font-size:18px; color:var(--brand); margin-bottom:8px; }
+      .muted { color:var(--muted); font-size:13px; }
+    </style>
+
+    <!-- Vite will inject the JS module -->
+    <script type="module" crossorigin src="/King/assets/index-BCRpnhFr.js"></script>
+    <link rel="stylesheet" crossorigin href="/King/assets/index-D6pl39ks.css">
+  </head>
+  <body>
+    <!-- Loading skeleton shown before React hydrates -->
+    <div id="root">
+      <div class="app-loading" aria-hidden="true">
+        <div class="loader-card" role="status" aria-live="polite">
+          <div class="brand">Solo Leveling 👑</div>
+          <div class="muted">Loading your dashboard — getting everything ready...</div>
+          <div style="height:16px"></div>
+          <div class="skeleton h-24"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main bundle (Vite entry) -->
+
+    <!-- If client-side routing is used (React Router), ensure your host rewrites to index.html -->
+    <!-- For Netlify: add _redirects with "/* /index.html 200" or for Vercel add rewrites in vercel.json -->
+  </body>
+</html>
